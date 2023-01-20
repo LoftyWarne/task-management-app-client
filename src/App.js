@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import MaterialTable, { Column } from '@material-table/core';
-import { Button} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from '@mui/material';
 import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
 import './App.css';
 import LoadingSpinner from './LoadingSpinner/LoadingSpinner.js'
+import { create } from '@mui/material/styles/createTransitions';
 
 function App() {
 
@@ -12,9 +13,19 @@ function App() {
 
   const [listCbxData, setListCbxData] = useState([]);  
 
-  const [selectedList, setSelectedList] = useState([]);  
+  const [selectedList, setSelectedList] = useState(null);  
+
+  const [isListSelected, setIsListSelected] = useState(false);  
+
+  const [listName, setListName] = useState({tbl_ListName: ""});  
 
   const [showTasks, setShowTasks] = useState(false);
+
+  const [showListCreator, setShowListCreator] = useState(false);
+
+  const [showListEditor, setShowListEditor] = useState(false);
+
+  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
 
   const [tableData, setTableData] = useState([]);  
 
@@ -37,6 +48,12 @@ function App() {
     fetchLists();
   }, []);
 
+  useEffect(() => {
+    if (!initialRender) {
+      fetchListTasks();
+    }
+  }, [selectedList]);
+
   const fetchLists = async () => {
     try {  
       setIsLoading(true)
@@ -54,9 +71,10 @@ function App() {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify()
+      body: JSON.stringify(requestOptions)
     };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/add`, requestOptions)
+    console.log(listName)
+    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/add`, requestOptions)
       .then(async response => {
         const data = await response.json()                  
         // check for error response
@@ -73,12 +91,12 @@ function App() {
     });     
   }
 
-  const updateListName = async (selectedList) => {
+  const updateListName = async () => {
     setIsLoading(true)
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(selectedList)
+      body: JSON.stringify({selectedList})
     };
     await fetch(`${process.env.REACT_APP_API_HOST}/api/list/update/${selectedList.id}`, requestOptions)
       .then(async response => {
@@ -121,7 +139,7 @@ function App() {
     });     
   }
 
-  const fetchTasks = async () => {
+  const fetchAllTasks = async () => {
     try {  
       setIsLoading(true)
       const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task`)    
@@ -133,7 +151,58 @@ function App() {
     }
   }
 
+  const fetchListTasks = async () => {
+    try {  
+      setIsLoading(true)
+      const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task/${selectedList.id}`)    
+      const json = await resp.json();
+      setTableData(json)
+      setIsLoading(false)
+    } catch (error) {
+      console.error('There was an error!', error);
+    }
+  }
 
+  const handleCreateListClick = () => {
+    setShowListCreator(true)
+  }
+
+  const handleSaveNewList = () => {    
+    createList()
+    setShowListCreator(false)
+  }
+
+  const handleRenameListClick = () => {
+    setShowListEditor(true)
+  }
+
+  const handleDeleteListClick = () => {
+    setShowDeleteWarning(true)
+  }
+
+  const handleClose = () => {
+    if (showListEditor) {
+      setShowListEditor(false)
+    }     
+    if (showListCreator) {
+      setShowListCreator(false)
+    }
+    if (showDeleteWarning) {
+      setShowDeleteWarning(false)
+    }       
+  }
+
+  const handleSaveEditListName = () => {
+    setShowListEditor(false)
+  }  
+
+  const handleInputChange = (e) => {
+    //const name = e.target.name 
+    //const value = e.target.value 
+    const { name, value } = e.target;
+  
+    setListName({tbl_ListName: value});
+  };
 
   const columns = [
     { title: 'tbl_PK_Task', field: 'tbl_PK_Task', hidden: true },
@@ -182,15 +251,54 @@ function App() {
         )}
       />
 
-      <div className='listBtnGroup'>
+        <div className='listBtnGroup'>
 
-        <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}}>Create List</Button>
+          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={handleCreateListClick}>Create List</Button>
 
-        <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}}>Delete List</Button>
+          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick} disabled={!isListSelected}>Delete List</Button>
 
-        <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}}>Rename List</Button>
+          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={handleRenameListClick} disabled={!isListSelected}>Rename List</Button>
+        
+        </div>
 
-      </div>
+          <Dialog open={showListEditor} onClose={handleClose}>
+            <DialogTitle>Edit List Name</DialogTitle>
+            <DialogContent>  
+              <TextField></TextField>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleSaveEditListName}>Save</Button>
+              <Button onClick={handleClose}>Cancel</Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog open={showListCreator} onClose={handleClose}>
+            <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>New List</DialogTitle>
+            <DialogContent>  
+              <TextField 
+                placeholder='Enter New List Name' 
+                sx={{justifyContent:'center'}}
+                type='text'
+                value={listName.tbl_ListName}
+                onChange={handleInputChange}>  
+                </TextField>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleSaveNewList} sx={{justifySelf: 'left', margin: 'auto'}}>Save</Button>
+              <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog open={showDeleteWarning} onClose={handleClose}>
+            <DialogTitle>Delete Confirmation</DialogTitle>
+            <DialogContent>  
+              <DialogContentText>Are you sure you want to delete {selectedList}?</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleSaveNewList}>Yes</Button>
+              <Button onClick={handleClose}>Cancel</Button>
+            </DialogActions>
+          </Dialog>
 
       {showTasks ?            
 
