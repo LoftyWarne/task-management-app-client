@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import MaterialTable, { Column } from '@material-table/core';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, TextField} from '@mui/material';
 import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
 import './App.css';
 import LoadingSpinner from './LoadingSpinner/LoadingSpinner.js'
-import { create } from '@mui/material/styles/createTransitions';
 
 function App() {
 
@@ -22,6 +21,10 @@ function App() {
   const [listName, setListName] = useState({tbl_ListName: ""});  
 
   const [showTasks, setShowTasks] = useState(false);
+
+  const [showTaskAdd, setShowTaskAdd] = useState(false);
+
+  const [taskValues, setTaskValues] = useState({});
 
   const [showListCreator, setShowListCreator] = useState(false);
 
@@ -141,6 +144,30 @@ function App() {
     });     
   }
 
+  const createTask = async () => {
+    setIsLoading(true)
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(taskValues)
+    };
+    await fetch(`${process.env.REACT_APP_API_HOST}/api/task/add`, requestOptions)
+      .then(async response => {
+        const data = await response.json()                  
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }
+        fetchLists()
+        setIsLoading(false)              
+    })      
+    .catch(error => {
+      console.error('There was an error!', error);
+    });     
+  }
+
   const fetchAllTasks = async () => {
     try {  
       setIsLoading(true)
@@ -203,12 +230,24 @@ function App() {
     }
     if (showDeleteWarning) {
       setShowDeleteWarning(false)
-    }       
+    }
+    if (showTaskAdd) {
+      setShowTaskAdd(false)
+    }         
   }
 
   const handleSaveEditListName = () => {
     setShowListEditor(false)
   }  
+
+  const handleAddTaskClick = () => {
+    setShowTaskAdd(true)
+  }
+
+  const handleSaveAddTaskClick = () => {
+    createTask()
+    setShowTaskAdd(false)
+  }
 
   const handleInputChange = (e) => {
     //const name = e.target.name 
@@ -218,6 +257,18 @@ function App() {
     setListName({
       ...selectedList,
       tbl_ListName: value
+    });
+  };
+
+  const handleTaskInputChange = (e) => {
+    //const name = e.target.name 
+    //const value = e.target.value 
+    const { name, value } = e.target;
+  
+    setTaskValues({
+      ...taskValues,
+      tbl_FK_List: selectedList.tbl_PK_List,
+      [name]: value,
     });
   };
 
@@ -351,11 +402,76 @@ function App() {
 
             <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick}>Add Task</Button>
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleAddTaskClick}>Add Task</Button>
 
               <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick} disabled={!isTaskSelected}>Move Task</Button>
 
               <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick} disabled={!isTaskSelected}>Delete Task</Button>
+
+              <Dialog open={showTaskAdd} onClose={handleClose}>
+                <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Add/Edit Task</DialogTitle>
+                <DialogContent>  
+                  <div style={{marginTop: "20px"}}>
+                    <DialogContentText style={{color:'black', fontWeight: '500'}}>
+                      Task Name:
+                    </DialogContentText>
+                    <DialogContentText>
+                      <TextField
+                        margin="dense"
+                        id="tbl_TaskName"
+                        name="tbl_TaskName"
+                        type="text" 
+                        placeholder='Enter Task Name' 
+                        title='Enter Task Name'                 
+                        variant="outlined"
+                        value={taskValues.tbl_TaskName}
+                        onChange={handleTaskInputChange}  
+                      />
+                    </DialogContentText>
+                  </div>
+                  <div style={{marginTop: "20px"}}>
+                    <DialogContentText style={{color:'black', fontWeight: '500'}}>
+                      Task Description:
+                    </DialogContentText>
+                    <DialogContentText>
+                      <TextField
+                        margin="dense"
+                        id="tbl_TaskDescription"
+                        name="tbl_TaskDescription"
+                        type="text" 
+                        placeholder='Enter Task Description' 
+                        title='Enter Task Description'                 
+                        variant="outlined"
+                        multiline
+                        fullWidth
+                        value={taskValues.tbl_TaskDescription}
+                        onChange={handleTaskInputChange}  
+                      />
+                    </DialogContentText>
+                  </div>
+                  <div style={{marginTop: "20px"}}>
+                    <DialogContentText style={{color:'black', fontWeight: '500'}}>
+                      Task Deadline:
+                    </DialogContentText>
+                    <DialogContentText>
+                      <TextField
+                        margin="dense"
+                        id="tbl_TaskDeadline"
+                        name="tbl_TaskDeadline"
+                        type="date"
+                        title='Enter Task Description'                 
+                        variant="outlined"
+                        value={taskValues.tbl_TaskDeadline}
+                        onChange={handleTaskInputChange}  
+                      />
+                    </DialogContentText>
+                  </div>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleSaveAddTaskClick} sx={{justifySelf: 'left', margin: 'auto'}}>Save</Button>
+                  <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
+                </DialogActions>
+              </Dialog>
 
             </div>
 
