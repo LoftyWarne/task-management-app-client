@@ -13,9 +13,11 @@ function App() {
 
   const [listCbxData, setListCbxData] = useState([]);  
 
-  const [selectedList, setSelectedList] = useState(null);  
+  const [selectedList, setSelectedList] = useState({});  
 
   const [isListSelected, setIsListSelected] = useState(false);  
+
+  const [isTaskSelected, setIsTaskSelected] = useState(false);  
 
   const [listName, setListName] = useState({tbl_ListName: ""});  
 
@@ -51,6 +53,7 @@ function App() {
   useEffect(() => {
     if (!initialRender) {
       fetchListTasks();
+      setShowTasks(true)
     }
   }, [selectedList]);
 
@@ -71,9 +74,8 @@ function App() {
     const requestOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestOptions)
+      body: JSON.stringify(listName)
     };
-    console.log(listName)
     await fetch(`${process.env.REACT_APP_API_HOST}/api/list/add`, requestOptions)
       .then(async response => {
         const data = await response.json()                  
@@ -96,9 +98,9 @@ function App() {
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({selectedList})
+      body: JSON.stringify(selectedList)
     };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/update/${selectedList.id}`, requestOptions)
+    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/update/${selectedList.tbl_PK_List}`, requestOptions)
       .then(async response => {
         const data = await response.json()                  
         // check for error response
@@ -115,14 +117,14 @@ function App() {
     });     
   }
 
-  const deleteList = async (selectedList) => {
+  const deleteList = async () => {
     setIsLoading(true)
     const requestOptions = {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(selectedList)
     };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/delete/${selectedList.id}`, requestOptions)
+    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/delete/${selectedList.tbl_PK_List}`, requestOptions)
       .then(async response => {
         const data = await response.json()                  
         // check for error response
@@ -154,7 +156,7 @@ function App() {
   const fetchListTasks = async () => {
     try {  
       setIsLoading(true)
-      const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task/${selectedList.id}`)    
+      const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task/${selectedList.tbl_PK_List}`)    
       const json = await resp.json();
       setTableData(json)
       setIsLoading(false)
@@ -176,8 +178,20 @@ function App() {
     setShowListEditor(true)
   }
 
+  const handleRenameListConfirmed = () => {    
+    updateListName()
+    setShowListEditor(false)
+    setShowTasks(false)
+  }
+
   const handleDeleteListClick = () => {
     setShowDeleteWarning(true)
+  }
+
+  const handleDeleteListConfirmed = () => {    
+    deleteList()
+    setShowDeleteWarning(false)
+    setShowTasks(false)
   }
 
   const handleClose = () => {
@@ -201,8 +215,17 @@ function App() {
     //const value = e.target.value 
     const { name, value } = e.target;
   
-    setListName({tbl_ListName: value});
+    setListName({
+      ...selectedList,
+      tbl_ListName: value
+    });
   };
+
+  const handleListSelectionChange = (value) => {
+    setinitialRender(false)
+    setSelectedList(value)
+    setIsListSelected(true)
+  }  
 
   const columns = [
     { title: 'tbl_PK_Task', field: 'tbl_PK_Task', hidden: true },
@@ -228,7 +251,7 @@ function App() {
         value={selectedList}
         data={listCbxData}
         style={{maxWidth: '500px', marginBottom: '30px', justifySelf: 'center', marginLeft: 'auto', marginRight: 'auto'}}
-        onChange={value => setListCbxData(value)}
+        onChange={value => handleListSelectionChange(value)}
         filter='contains'
         renderListItem={({ item })=> (
           <table>
@@ -264,11 +287,16 @@ function App() {
           <Dialog open={showListEditor} onClose={handleClose}>
             <DialogTitle>Edit List Name</DialogTitle>
             <DialogContent>  
-              <TextField></TextField>
+              <TextField
+                sx={{justifyContent:'center'}}
+                type='text'
+                value={listName.tbl_ListName}
+                onChange={handleInputChange}> 
+              </TextField>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleSaveEditListName}>Save</Button>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleSaveEditListName} sx={{justifySelf: 'left', margin: 'auto'}}>Save</Button>
+              <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
             </DialogActions>
           </Dialog>
 
@@ -290,34 +318,49 @@ function App() {
           </Dialog>
 
           <Dialog open={showDeleteWarning} onClose={handleClose}>
-            <DialogTitle>Delete Confirmation</DialogTitle>
+            <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Delete Confirmation</DialogTitle>
             <DialogContent>  
-              <DialogContentText>Are you sure you want to delete {selectedList}?</DialogContentText>
+              <DialogContentText>Are you sure you want to delete {selectedList.tbl_ListName}?</DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleSaveNewList}>Yes</Button>
-              <Button onClick={handleClose}>Cancel</Button>
+              <Button onClick={handleDeleteListConfirmed} sx={{justifySelf: 'left', margin: 'auto'}}>Yes</Button>
+              <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
             </DialogActions>
           </Dialog>
 
       {showTasks ?            
 
         isLoading ? <LoadingSpinner />  :
-          <>
 
-            <MaterialTable columns={columns} data={tableData}
-              options={{
-                search: true, draggable: false, idSynonym: 'tbl_PK_Task', searchFieldAlignment: "right", searchAutoFocus: true, searchFieldVariant: "standard",
-                filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true,
-                showSelectAllCheckbox: false, showTextRowsSelected: false, showTitle: false, grouping: false, columnsButton: false,
-                rowStyle: {padding: '0', margin:'0', textAlign:'left', border: "solid black 1px",background: "white"},
-                headerStyle: { background: "#75C9FA",color:"#000", padding: '1', margin:'0', textAlign:'left', justifyContent: "left",
-                position: "sticky", borderBottom: "solid black 1px", borderLeft: "solid black 1px", borderRight: "solid black 1px" },
-                maxBodyHeight:' 675px'
-              }}
-            />
+          <>
+            <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
+
+              <MaterialTable columns={columns} data={tableData}
+                options={{
+                  search: false, draggable: false, idSynonym: 'tbl_PK_Task', searchFieldAlignment: "right", searchAutoFocus: true, searchFieldVariant: "standard",
+                  filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true, toolbar:false,
+                  showSelectAllCheckbox: true, showTextRowsSelected: true, showTitle: false, grouping: false, columnsButton: false,
+                  rowStyle: {padding: '0', margin:'0', textAlign:'left', border: "solid black 1px",background: "white"},
+                  headerStyle: { background: "#75C9FA",color:"#000", padding: '1', margin:'0', textAlign:'left', justifyContent: "left",
+                  position: "sticky", borderBottom: "solid black 1px", borderLeft: "solid black 1px", borderRight: "solid black 1px" },
+                  maxBodyHeight:' 675px'
+                }}
+              />
+
+            </div>
+
+            <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
+
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick}>Add Task</Button>
+
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick} disabled={!isTaskSelected}>Move Task</Button>
+
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick} disabled={!isTaskSelected}>Delete Task</Button>
+
+            </div>
 
           </>
+
       :
       ""}
         
