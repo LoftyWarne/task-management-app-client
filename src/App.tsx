@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from '@mui/material';
+import { Button} from '@mui/material';
 import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
 import './App.css';
 import LoadingSpinner from './Components/LoadingSpinner/LoadingSpinner'
-import MoveTask from './Components/MoveTask/MoveTask'
 import CreateList from './Components/CreateList/CreateList';
 import EditList from './Components/EditList/EditList';
 import DeleteList from './Components/DeleteList/DeleteList';
 import TaskTable from './Components/TaskTable/TaskTable'
+import MoveTask from './Components/MoveTask/MoveTask'
+import CreateTask from './Components/CreateTask/CreateTask';
 
 function App() {
 
@@ -16,7 +17,7 @@ function App() {
 
   const [listCbxData, setListCbxData] = useState([]);  
 
-  const [selectedList, setSelectedList] = useState({});  
+  const [selectedList, setSelectedList] = useState({tbl_PK_List: 0});  
 
   const [isListSelected, setIsListSelected] = useState(false);  
 
@@ -46,10 +47,10 @@ function App() {
 
   const [isRowSelected, setIsRowSelected] = useState(false);
 
-  const showCompleteCheckboxSelectionChange = (event) => {
+  const showCompleteCheckboxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setinitialRender(false)
     setCheckboxShowComplete(event.target.checked)
-    setSelectedRows(null)
+    setSelectedRows({})
     setIsRowSelected(false)
   } 
 
@@ -99,9 +100,37 @@ function App() {
     }
   }
 
+  const updateTask = async (newData: any) => {
+    setIsLoading(true)
+    const requestOptions = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newData)
+    };
+    await fetch(`${process.env.REACT_APP_API_HOST}/${newData.tbl_PK_Task}`, requestOptions)
+      .then(async response => {
+        const data = await response.json()                  
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }            
+    })      
+    .catch(error => {
+      console.error('There was an error!', error);
+    });     
+}
+
   const handleSaveCreateList = () => {
     setShowCreateList(false)
+    fetchLists()
   }
+
+  const handleSaveEditListName = () => {
+    setShowEditList(false)
+    fetchLists()
+  } 
 
   const handleDeleteListConfirmed = () => {
     setShowDeleteList(false)
@@ -125,18 +154,14 @@ function App() {
     if (showCreateTask) {
       setShowCreateTask(false)
     }         
-  }
-
-  const handleSaveEditListName = () => {
-    setShowEditList(false)
-    fetchLists()
   }  
 
   const handleSaveCreateTask = () => {
     setShowCreateTask(false)
+    fetchListTasks()
   }
 
-  const handleListSelectionChange = (value) => {
+  const handleListSelectionChange = (value: any) => {
     setinitialRender(false)
     setSelectedList(value)
     setIsListSelected(true)
@@ -159,7 +184,7 @@ function App() {
         style={{maxWidth: '500px', marginBottom: '30px', justifySelf: 'center', marginLeft: 'auto', marginRight: 'auto'}}
         onChange={value => handleListSelectionChange(value)}
         filter='contains'
-        renderListItem={({ item })=> (
+        renderListItem={({ item }: any)=> (
           <table>
             <tbody>
               <tr>
@@ -169,7 +194,7 @@ function App() {
           </table>
           
         )}
-        renderValue={({ item }) => (
+        renderValue={({ item }: any) => (
           <table>
             <tbody>
               <tr>
@@ -190,7 +215,7 @@ function App() {
         
         </div>
 
-        {showCreateList ? <CreateList selectedList={selectedList} handleSaveCreateList={handleSaveCreateList} handleClose={handleClose}/> : ""}
+        {showCreateList ? <CreateList handleSaveCreateList={handleSaveCreateList} handleClose={handleClose}/> : ""}
           
         {showEditList ? <EditList selectedList={selectedList} handleSaveEditListName={handleSaveEditListName} handleClose={handleClose}/> : ""}
 
@@ -217,7 +242,7 @@ function App() {
 
               {showMoveTask ? <MoveTask handleMoveTaskConfirmed={handleMoveTaskConfirmed} handleClose={handleClose} /> : ""}
 
-              
+              {showCreateTask ? <CreateTask handleSaveCreateTask={handleSaveCreateTask} handleClose={handleClose} selectedList={selectedList.tbl_PK_List}/> : ""}
 
             </div>
 

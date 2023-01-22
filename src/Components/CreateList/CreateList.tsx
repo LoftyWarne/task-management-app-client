@@ -77,6 +77,7 @@ export default function CreateList ({handleSaveCreateList, handleClose}: CreateL
     });
 
   };
+  
   //hide error message and reset error status
   const handleCloseErrorMessage = () => {
     setError(false)
