@@ -67,12 +67,11 @@ function App() {
   }, [selectedList]);*/
 
   const fetchLists = async () => {
-    try {  
-      setIsLoading(true)
+    try {
       const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/list`)
       const json = await resp.json();
       setListCbxData(json)
-      setIsLoading(false)
+      console.log(json)
     } catch (error) {
       console.error('There was an error!', error);
     }
@@ -100,34 +99,7 @@ function App() {
     .catch(error => {
       console.error('There was an error!', error);
     });     
-  }
-
-  const updateListName = async (values) => {
-    setIsLoading(true)
-    console.log(JSON.stringify(values))
-    const requestOptions = {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(values)
-    };
-    console.log(JSON.stringify(values))
-    console.log(`${process.env.REACT_APP_API_HOST}/api/list/update/${values.tbl_PK_List}`)
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/update/${values.tbl_PK_List}`, requestOptions)
-      .then(async response => {
-        const data = await response.json()                  
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-        fetchLists()
-        setIsLoading(false)              
-    })      
-    .catch(error => {
-      console.error('There was an error!', error);
-    });     
-  }
+  } 
 
   const deleteList = async () => {
     setIsLoading(true)
@@ -237,10 +209,9 @@ function App() {
     }         
   }
 
-  const handleSaveEditListName = (values) => {
-    console.log('triggered')
-    updateListName(values)
+  const handleSaveEditListName = () => {
     setShowEditList(false)
+    fetchLists()
   }  
 
   const handleAddTaskClick = () => {
