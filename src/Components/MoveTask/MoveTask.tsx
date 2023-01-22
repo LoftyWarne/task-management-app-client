@@ -2,16 +2,15 @@ import React, {useEffect, useState} from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
-import "./MoveTask.css";
 
 //The MoveTask component provides a dialog box for moving tasks between lists
 
 interface MoveTaskProps {
-    handleMoveListConfirmed: any;
+    handleMoveTaskConfirmed: any;
     handleClose: any;
   }
 
-export default function MoveTask ({handleMoveListConfirmed, handleClose}: MoveTaskProps): JSX.Element {
+export default function MoveTask ({handleMoveTaskConfirmed, handleClose}: MoveTaskProps): JSX.Element {
 
     //state of data in list combobox
     const [listCbxData, setListCbxData] = useState([]); 
@@ -27,10 +26,12 @@ export default function MoveTask ({handleMoveListConfirmed, handleClose}: MoveTa
         tbl_ListName: string
     }
 
+    // fetch lists on initial render
     useEffect(() => {
         fetchLists();
     }, []);
 
+    // GET request to select all lists from tbl_List
     const fetchLists = async () => {
         try {
           const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/list`)
@@ -86,7 +87,7 @@ export default function MoveTask ({handleMoveListConfirmed, handleClose}: MoveTa
                 />
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleMoveListConfirmed} sx={{justifySelf: 'left', margin: 'auto'}} disabled={!isListSelected}>Confirm</Button>
+            <Button onClick={handleMoveTaskConfirmed} sx={{justifySelf: 'left', margin: 'auto'}} disabled={!isListSelected}>Confirm</Button>
             <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
             </DialogActions>
         </Dialog>

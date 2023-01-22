@@ -24,9 +24,7 @@ function App() {
 
   const [showTasks, setShowTasks] = useState(false);
 
-  const [showTaskAdd, setShowTaskAdd] = useState(false);
-
-  const [taskValues, setTaskValues] = useState({});
+  const [showCreateTask, setShowCreateTask] = useState(false);  
 
   const [showCreateList, setShowCreateList] = useState(false);
 
@@ -62,7 +60,7 @@ function App() {
   useEffect(() => {
     if (!initialRender) {
       fetchListTasks();
-      //setShowTasks(true)
+      setShowTasks(true)
     }
   }, [selectedList]);
 
@@ -76,31 +74,7 @@ function App() {
       console.error('There was an error!', error);
     }
   }
-
-  const createTask = async () => {
-    setIsLoading(true)
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taskValues)
-    };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/task/add`, requestOptions)
-      .then(async response => {
-        const data = await response.json()                  
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-        fetchLists()
-        setIsLoading(false)              
-    })      
-    .catch(error => {
-      console.error('There was an error!', error);
-    });     
-  }
-
+  
   const fetchAllTasks = async () => {
     try {  
       setIsLoading(true)
@@ -134,6 +108,10 @@ function App() {
     setShowTasks(false)
   }
 
+  const handleMoveTaskConfirmed = () => {
+    setShowMoveTask(false)
+  }
+
   const handleClose = () => {
     if (showEditList) {
       setShowEditList(false)
@@ -144,8 +122,8 @@ function App() {
     if (showDeleteList) {
       setShowDeleteList(false)
     }
-    if (showTaskAdd) {
-      setShowTaskAdd(false)
+    if (showCreateTask) {
+      setShowCreateTask(false)
     }         
   }
 
@@ -154,28 +132,9 @@ function App() {
     fetchLists()
   }  
 
-  const handleAddTaskClick = () => {
-    setShowTaskAdd(true)
+  const handleSaveCreateTask = () => {
+    setShowCreateTask(false)
   }
-
-  const handleSaveAddTaskClick = () => {
-    createTask()
-    setShowTaskAdd(false)
-  }
-
-  
-
-  const handleTaskInputChange = (e) => {
-    //const name = e.target.name 
-    //const value = e.target.value 
-    const { name, value } = e.target;
-  
-    setTaskValues({
-      ...taskValues,
-      tbl_FK_List: selectedList.tbl_PK_List,
-      [name]: value,
-    });
-  };
 
   const handleListSelectionChange = (value) => {
     setinitialRender(false)
@@ -250,79 +209,15 @@ function App() {
 
             <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={handleAddTaskClick}>Add Task</Button>
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowCreateTask(true)}>Add Task</Button>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={setShowMoveTask(true)} disabled={!isTaskSelected}>Move Task</Button>
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowMoveTask(true)} disabled={!isTaskSelected}>Move Task</Button>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={setShowDeleteTask(true)} disabled={!isTaskSelected}>Delete Task</Button>
+              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowDeleteTask(true)} disabled={!isTaskSelected}>Delete Task</Button>
 
-              {showMoveTask ? <MoveTask></MoveTask> : ""}
+              {showMoveTask ? <MoveTask handleMoveTaskConfirmed={handleMoveTaskConfirmed} handleClose={handleClose} /> : ""}
+
               
-
-              <Dialog open={showTaskAdd} onClose={handleClose}>
-                <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Add/Edit Task</DialogTitle>
-                <DialogContent>  
-                  <div style={{marginTop: "20px"}}>
-                    <DialogContentText style={{color:'black', fontWeight: '500'}}>
-                      Task Name:
-                    </DialogContentText>
-                    <DialogContentText>
-                      <TextField
-                        margin="dense"
-                        id="tbl_TaskName"
-                        name="tbl_TaskName"
-                        type="text" 
-                        placeholder='Enter Task Name' 
-                        title='Enter Task Name'                 
-                        variant="outlined"
-                        value={taskValues.tbl_TaskName}
-                        onChange={handleTaskInputChange}  
-                      />
-                    </DialogContentText>
-                  </div>
-                  <div style={{marginTop: "20px"}}>
-                    <DialogContentText style={{color:'black', fontWeight: '500'}}>
-                      Task Description:
-                    </DialogContentText>
-                    <DialogContentText>
-                      <TextField
-                        margin="dense"
-                        id="tbl_TaskDescription"
-                        name="tbl_TaskDescription"
-                        type="text" 
-                        placeholder='Enter Task Description' 
-                        title='Enter Task Description'                 
-                        variant="outlined"
-                        multiline
-                        fullWidth
-                        value={taskValues.tbl_TaskDescription}
-                        onChange={handleTaskInputChange}  
-                      />
-                    </DialogContentText>
-                  </div>
-                  <div style={{marginTop: "20px"}}>
-                    <DialogContentText style={{color:'black', fontWeight: '500'}}>
-                      Task Deadline:
-                    </DialogContentText>
-                    <DialogContentText>
-                      <TextField
-                        margin="dense"
-                        id="tbl_TaskDeadline"
-                        name="tbl_TaskDeadline"
-                        type="date"
-                        title='Enter Task Description'                 
-                        variant="outlined"
-                        value={taskValues.tbl_TaskDeadline}
-                        onChange={handleTaskInputChange}  
-                      />
-                    </DialogContentText>
-                  </div>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleSaveAddTaskClick} sx={{justifySelf: 'left', margin: 'auto'}}>Save</Button>
-                  <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
-                </DialogActions>
-              </Dialog>
 
             </div>
 
