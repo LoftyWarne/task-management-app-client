@@ -1,7 +1,14 @@
 import React from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 
-export default function ErrorMessage ({errorMessage, handleCloseErrorMessage}) {
+//The ErrorMessage component provides a dialog box for displaying errors to users
+
+interface ErrorMessageProps {
+  errorMessage: string;
+  handleCloseErrorMessage: any;
+}
+
+export default function ErrorMessage ({errorMessage, handleCloseErrorMessage}: ErrorMessageProps) {
 
   return (      
 

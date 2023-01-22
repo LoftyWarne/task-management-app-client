@@ -1,12 +1,14 @@
 import React, {useEffect, useState} from 'react';
-import MaterialTable, { Column } from '@material-table/core';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField} from '@mui/material';
 import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
 import './App.css';
-import LoadingSpinner from './LoadingSpinner/LoadingSpinner.js'
-import MoveTask from './Components/MoveTask/MoveTask.js'
+import LoadingSpinner from './Components/LoadingSpinner/LoadingSpinner'
+import MoveTask from './Components/MoveTask/MoveTask'
+import CreateList from './Components/CreateList/CreateList';
 import EditList from './Components/EditList/EditList';
+import DeleteList from './Components/DeleteList/DeleteList';
+import TaskTable from './Components/TaskTable/TaskTable'
 
 function App() {
 
@@ -18,9 +20,7 @@ function App() {
 
   const [isListSelected, setIsListSelected] = useState(false);  
 
-  const [isTaskSelected, setIsTaskSelected] = useState(false);  
-
-  const [updatedListValues, setUpdatedListValues] = useState({});  
+  const [isTaskSelected, setIsTaskSelected] = useState(false);
 
   const [showTasks, setShowTasks] = useState(false);
 
@@ -28,13 +28,13 @@ function App() {
 
   const [taskValues, setTaskValues] = useState({});
 
-  const [showListCreator, setShowListCreator] = useState(false);
+  const [showCreateList, setShowCreateList] = useState(false);
+
+  const [showDeleteList, setShowDeleteList] = useState(false);
 
   const [showEditList, setShowEditList] = useState(false);
 
   const [showMoveTask, setShowMoveTask] = useState(false);
-
-  const [showDeleteWarning, setShowDeleteWarning] = useState(false);
 
   const [showDeleteTask, setShowDeleteTask] = useState(false)
 
@@ -59,12 +59,12 @@ function App() {
     fetchLists();
   }, []);
 
-  /*useEffect(() => {
+  useEffect(() => {
     if (!initialRender) {
       fetchListTasks();
-      setShowTasks(true)
+      //setShowTasks(true)
     }
-  }, [selectedList]);*/
+  }, [selectedList]);
 
   const fetchLists = async () => {
     try {
@@ -75,54 +75,6 @@ function App() {
     } catch (error) {
       console.error('There was an error!', error);
     }
-  }
-
-  const createList = async () => {
-    setIsLoading(true)
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedListValues)
-    };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/add`, requestOptions)
-      .then(async response => {
-        const data = await response.json()                  
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-        fetchLists()
-        setIsLoading(false)              
-    })      
-    .catch(error => {
-      console.error('There was an error!', error);
-    });     
-  } 
-
-  const deleteList = async () => {
-    setIsLoading(true)
-    const requestOptions = {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(selectedList)
-    };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/list/delete/${selectedList.tbl_PK_List}`, requestOptions)
-      .then(async response => {
-        const data = await response.json()                  
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }
-        fetchLists()
-        setIsLoading(false)              
-    })      
-    .catch(error => {
-      console.error('There was an error!', error);
-    });     
   }
 
   const createTask = async () => {
@@ -173,36 +125,24 @@ function App() {
     }
   }
 
-  const handleCreateListClick = () => {
-    setUpdatedListValues({})
-    setShowListCreator(true)
+  const handleSaveCreateList = () => {
+    setShowCreateList(false)
   }
 
-  const handleSaveNewList = () => {    
-    createList()
-    setShowListCreator(false)
-  }
-
-  const handleDeleteListClick = () => {
-    setShowDeleteWarning(true)
-  }
-
-  const handleDeleteListConfirmed = () => {    
-    deleteList()
-    setShowDeleteWarning(false)
+  const handleDeleteListConfirmed = () => {
+    setShowDeleteList(false)
     setShowTasks(false)
   }
 
   const handleClose = () => {
-    console.log('handleClose Triggered')
     if (showEditList) {
       setShowEditList(false)
     }     
-    if (showListCreator) {
-      setShowListCreator(false)
+    if (showCreateList) {
+      setShowCreateList(false)
     }
-    if (showDeleteWarning) {
-      setShowDeleteWarning(false)
+    if (showDeleteList) {
+      setShowDeleteList(false)
     }
     if (showTaskAdd) {
       setShowTaskAdd(false)
@@ -223,16 +163,7 @@ function App() {
     setShowTaskAdd(false)
   }
 
-  const handleListInputChange = (e) => {
-    //const name = e.target.name 
-    //const value = e.target.value 
-    const { name, value } = e.target;
   
-    setUpdatedListValues({
-      ...updatedListValues,
-      tbl_ListName: value
-    });
-  };
 
   const handleTaskInputChange = (e) => {
     //const name = e.target.name 
@@ -250,16 +181,7 @@ function App() {
     setinitialRender(false)
     setSelectedList(value)
     setIsListSelected(true)
-  }  
-
-  const columns = [
-    { title: 'tbl_PK_Task', field: 'tbl_PK_Task', hidden: true },
-    { title: 'tbl_FK_List', field: 'tbl_FK_List', hidden: true },
-    { title: 'Task Title', field: 'tbl_TaskName'},
-    { title: 'Task Description', field: "tbl_TaskDescription"},
-    { title: 'Task Deadline', field: "tbl_TaskDeadline"},
-    { title: 'Task Complete', field: "tbl_TaskComplete"},
-  ]
+  }    
 
   return (
     <div className="App">
@@ -301,43 +223,19 @@ function App() {
 
         <div className='listBtnGroup'>
 
-          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={handleCreateListClick}>Create List</Button>
+          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowCreateList(true)}>Create List</Button>
 
-          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={handleDeleteListClick} disabled={!isListSelected}>Delete List</Button>
+          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowDeleteList(true)} disabled={!isListSelected}>Delete List</Button>
 
           <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowEditList(true)} disabled={!isListSelected}>Rename List</Button>
         
         </div>
+
+        {showCreateList ? <CreateList selectedList={selectedList} handleSaveCreateList={handleSaveCreateList} handleClose={handleClose}/> : ""}
           
-        {showEditList ? <EditList selectedList={selectedList} handleSaveEditListName={handleSaveEditListName} handleClose={handleClose}></EditList> : ""}
+        {showEditList ? <EditList selectedList={selectedList} handleSaveEditListName={handleSaveEditListName} handleClose={handleClose}/> : ""}
 
-          <Dialog open={showListCreator} onClose={handleClose}>
-            <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>New List</DialogTitle>
-            <DialogContent>  
-              <TextField 
-                placeholder='Enter New List Name' 
-                sx={{justifyContent:'center'}}
-                type='text'
-                value={updatedListValues.tbl_ListName}
-                onChange={handleListInputChange}>  
-                </TextField>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleSaveNewList} sx={{justifySelf: 'left', margin: 'auto'}}>Save</Button>
-              <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
-            </DialogActions>
-          </Dialog>
-
-          <Dialog open={showDeleteWarning} onClose={handleClose}>
-            <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Delete Confirmation</DialogTitle>
-            <DialogContent>  
-              <DialogContentText>Are you sure you want to delete {selectedList.tbl_ListName}?</DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleDeleteListConfirmed} sx={{justifySelf: 'left', margin: 'auto'}}>Yes</Button>
-              <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
-            </DialogActions>
-          </Dialog>
+        {showDeleteList ? <DeleteList selectedList={selectedList} handleDeleteListConfirmed={handleDeleteListConfirmed} handleClose={handleClose}/> : ""}        
 
       {showTasks ?            
 
@@ -346,17 +244,7 @@ function App() {
           <>
             <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
-              <MaterialTable columns={columns} data={tableData}
-                options={{
-                  search: false, draggable: false, idSynonym: 'tbl_PK_Task', searchFieldAlignment: "right", searchAutoFocus: true, searchFieldVariant: "standard",
-                  filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true, toolbar:false,
-                  showSelectAllCheckbox: true, showTextRowsSelected: true, showTitle: false, grouping: false, columnsButton: false,
-                  rowStyle: {padding: '0', margin:'0', textAlign:'left', border: "solid black 1px",background: "white"},
-                  headerStyle: { background: "#75C9FA",color:"#000", padding: '1', margin:'0', textAlign:'left', justifyContent: "left",
-                  position: "sticky", borderBottom: "solid black 1px", borderLeft: "solid black 1px", borderRight: "solid black 1px" },
-                  maxBodyHeight:' 675px'
-                }}
-              />
+              <TaskTable tableData={tableData}/>
 
             </div>
 

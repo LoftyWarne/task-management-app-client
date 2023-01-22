@@ -4,13 +4,28 @@ import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
 import "./MoveTask.css";
 
-export default function MoveTask ({handleMoveListConfirmed, handleClose}) {
+//The MoveTask component provides a dialog box for moving tasks between lists
 
+interface MoveTaskProps {
+    handleMoveListConfirmed: any;
+    handleClose: any;
+  }
+
+export default function MoveTask ({handleMoveListConfirmed, handleClose}: MoveTaskProps): JSX.Element {
+
+    //state of data in list combobox
     const [listCbxData, setListCbxData] = useState([]); 
 
+    //state of whether a list is selected
     const [isListSelected, setIsListSelected] = useState(false);
 
+    //state of list selected
     const [selectedList, setSelectedList] = useState({}); 
+
+    interface cbxListValues {
+        tbl_PK_ListValue: number,
+        tbl_ListName: string
+    }
 
     useEffect(() => {
         fetchLists();
@@ -26,14 +41,14 @@ export default function MoveTask ({handleMoveListConfirmed, handleClose}) {
         }
     }
     
-    const handleListSelectionChange = (value) => {
+    const handleListSelectionChange = (value: cbxListValues) => {
         setSelectedList(value)
         setIsListSelected(true)
     }  
 
     return (        
 
-        <Dialog onClose={handleClose}>
+        <Dialog onClose={handleClose} open>
             <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Move Task</DialogTitle>
             <DialogContent>  
                 <DialogContentText>Select Destination List</DialogContentText>
@@ -49,22 +64,22 @@ export default function MoveTask ({handleMoveListConfirmed, handleClose}) {
                     style={{maxWidth: '500px', marginBottom: '30px', justifySelf: 'center', marginLeft: 'auto', marginRight: 'auto'}}
                     onChange={value => handleListSelectionChange(value)}
                     filter='contains'
-                    renderListItem={({ item })=> (
+                    renderListItem={({ item }: any) => (
                     <table>
                         <tbody>
-                        <tr>
-                            <td >{item.tbl_ListName}</td>
-                        </tr>
+                            <tr>
+                                <td >{item.tbl_ListName}</td>
+                            </tr>
                         </tbody>
                     </table>
                     
                     )}
-                    renderValue={({ item }) => (
+                    renderValue={({ item }: any) => (
                     <table>
                         <tbody>
-                        <tr>
-                            <td >{item.tbl_ListName}</td>
-                        </tr>
+                            <tr>
+                                <td >{item.tbl_ListName}</td>
+                            </tr>
                         </tbody>
                     </table>
                     )}

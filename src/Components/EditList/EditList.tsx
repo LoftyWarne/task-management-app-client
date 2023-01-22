@@ -1,11 +1,16 @@
 import React, {useState} from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from '@mui/material';
-import "./EditList.css";
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
-//This component provides a dialog box for renaming lists
+//The EditList component provides a dialog box for renaming lists
 
-export default function EditList ({selectedList, handleSaveEditListName, handleClose}) {
+interface EditListProps {
+  selectedList: any;
+  handleSaveEditListName: any;
+  handleClose: any;
+}
+
+export default function EditList ({selectedList, handleSaveEditListName, handleClose}: EditListProps): JSX.Element {
 
   //state of tbl_ListName and tbl_PK_ListName
   const [updatedListValues, setUpdatedListValues] = useState(selectedList);
@@ -63,7 +68,7 @@ export default function EditList ({selectedList, handleSaveEditListName, handleC
   }
 
   //update listname in updatedListValues object
-  const handleUpdatedListName = (e) => {
+  const handleUpdatedListName = (e: React.ChangeEvent<HTMLInputElement>) => {
 
       const { value } = e.target;
     
