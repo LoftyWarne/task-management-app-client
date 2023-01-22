@@ -5,19 +5,13 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
 //The TaskTable component provides a table of tasks
 
-export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element {
+export default function TaskTable ({tableData, handleTaskEdit, updateSelectedRows}:any): JSX.Element {
 
    //state of whether an error in form validation  or fetch request has occurred
    const [error, setError] = useState(false)
 
    //state of error message presented to the user if an error in form validation or fetch request has occurred 
    const [errorMessage, setErrorMessage] = useState("")
-
-   const [selectedRows, setSelectedRows] = useState<number[]>([]);
-
-   useEffect(() => {
-    console.log(selectedRows)
-  }, [selectedRows]);
 
   type tableDataColumns = {
     tbl_PK_Task: number,
@@ -34,7 +28,7 @@ export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element
     { title: 'Task Description', field: "tbl_TaskDescription", type: 'string'},
     { title: 'Task Deadline', field: "tbl_TaskDeadline", type: 'date'},
     { title: 'Task Complete', field: "tbl_TaskComplete", type: 'boolean'},
-  ] as Column<tableDataColumns>[] 
+  ] as Column<any>[] 
 
   const updateTask = async (rowData: any) => {
     const requestOptions = {
@@ -116,15 +110,18 @@ export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element
               })
           }
         ]}
-        onRowClick={(event, rowData) => {(       
-          
-          setSelectedRows ([
-            ...selectedRows,
-            /* @ts-ignore */
-            rowData.tbl_PK_Task
-          ])
+        onSelectionChange={( rowData) => {
 
-        )}}
+          let pkArray:number[] = []
+          
+          //iterate through rowData array of selected objects and add to pkArray 
+          rowData.forEach(row =>{
+            pkArray.push(row.tbl_PK_Task)
+          })
+
+          updateSelectedRows(pkArray)
+
+        }}
         options={{
           search: false, draggable: false, idSynonym: 'tbl_PK_Task', searchFieldAlignment: "right", searchAutoFocus: true, searchFieldVariant: "standard",
           filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true, toolbar:false,

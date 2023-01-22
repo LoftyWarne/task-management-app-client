@@ -43,15 +43,13 @@ function App() {
 
   const [checkboxShowComplete, setCheckboxShowComplete]  = useState(false);
 
-  const [selectedRows, setSelectedRows] = useState({});
-
-  const [isRowSelected, setIsRowSelected] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
   const showCompleteCheckboxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setinitialRender(false)
     setCheckboxShowComplete(event.target.checked)
-    setSelectedRows({})
-    setIsRowSelected(false)
+    setSelectedRows([])
+    setIsTaskSelected(false)
   } 
 
   useEffect(() => {
@@ -65,12 +63,21 @@ function App() {
     }
   }, [selectedList]);
 
+  useEffect(() => {
+    if (!initialRender) {
+      if (selectedRows.length > 0 ) {
+
+      } else {
+        
+      }
+    }
+  }, [selectedRows]);
+
   const fetchLists = async () => {
     try {
       const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/list`)
       const json = await resp.json();
       setListCbxData(json)
-      console.log(json)
     } catch (error) {
       console.error('There was an error!', error);
     }
@@ -167,6 +174,16 @@ function App() {
     setIsListSelected(true)
   }    
 
+  const updateSelectedRows = (tblPKArray: []) => {
+    setSelectedRows(tblPKArray)
+    if (tblPKArray.length === 0) {
+      setIsTaskSelected(false)
+    } else {
+      setIsTaskSelected(true)
+    }
+    
+  }  
+
   return (
     <div className="App">
 
@@ -228,7 +245,7 @@ function App() {
           <>
             <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
-              <TaskTable tableData={tableData}/>
+              <TaskTable tableData={tableData} updateSelectedRows={updateSelectedRows}/>
 
             </div>
 
