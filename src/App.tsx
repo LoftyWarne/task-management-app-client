@@ -10,6 +10,7 @@ import DeleteList from './Components/DeleteList/DeleteList';
 import TaskTable from './Components/TaskTable/TaskTable'
 import MoveTask from './Components/MoveTask/MoveTask'
 import CreateTask from './Components/CreateTask/CreateTask';
+import DeleteTask from './Components/DeleteTask/DeleteTask';
 
 function App() {
 
@@ -129,26 +130,32 @@ function App() {
     .catch(error => {
       console.error('There was an error!', error);
     });     
-}
+  }
+
+  const handleListSelectionChange = (value: any) => {
+    setinitialRender(false)
+    setSelectedList(value)
+    setIsListSelected(true)
+    setIsTaskSelected(false)
+  }   
 
   const handleSaveCreateList = () => {
     setShowCreateList(false)
     fetchLists()
+    setIsTaskSelected(false)
   }
 
   const handleSaveEditListName = () => {
     setShowEditList(false)
     fetchLists()
+    setIsTaskSelected(false)
   } 
 
   const handleDeleteListConfirmed = () => {
     setShowDeleteList(false)
     setShowTasks(false)
-  }
-
-  const handleMoveTaskConfirmed = () => {
-    setShowMoveTask(false)
-  }
+    setIsTaskSelected(false)
+  }  
 
   const handleClose = () => {
     if (showEditList) {
@@ -177,13 +184,25 @@ function App() {
   const handleSaveCreateTask = () => {
     setShowCreateTask(false)
     fetchListTasks()
+    setIsTaskSelected(false)
   }
 
-  const handleListSelectionChange = (value: any) => {
-    setinitialRender(false)
-    setSelectedList(value)
-    setIsListSelected(true)
-  }    
+  const handleMoveTaskConfirmed = () => {
+    fetchListTasks()
+    setShowMoveTask(false)
+    setIsTaskSelected(false)
+  }
+
+  const handleCompleteTask = () => {
+    fetchListTasks()
+    setIsTaskSelected(false)
+  }
+
+  const handleDeleteTaskConfirmed = () => {
+    setShowDeleteTask(false)
+    fetchListTasks()
+    setIsTaskSelected(false)
+  }
 
   const updateSelectedRows = (tblPKArray: []) => {
     setSelectedRows(tblPKArray)
@@ -256,7 +275,7 @@ function App() {
           <>
             <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
-              <TaskTable tableData={tableData} updateSelectedRows={updateSelectedRows}/>
+              <TaskTable tableData={tableData} updateSelectedRows={updateSelectedRows} handleCompleteTask={handleCompleteTask}/>
 
             </div>
 
@@ -271,6 +290,13 @@ function App() {
               {showMoveTask ? <MoveTask handleMoveTaskConfirmed={handleMoveTaskConfirmed} handleClose={handleClose} /> : ""}
 
               {showCreateTask ? <CreateTask handleSaveCreateTask={handleSaveCreateTask} handleClose={handleClose} selectedList={selectedList.tbl_PK_List}/> : ""}
+
+              {showDeleteTask ? 
+              <DeleteTask 
+                selectedRows={selectedRows}
+                handleDeleteTaskConfirmed={handleDeleteTaskConfirmed} 
+                handleClose={handleClose}
+              /> : ""}
 
             </div>
 

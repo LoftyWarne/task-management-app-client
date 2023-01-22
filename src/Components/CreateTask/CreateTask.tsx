@@ -34,7 +34,6 @@ export default function CreateTask ({handleSaveCreateTask, handleClose, selected
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(taskValues)
     };
-    console.log(JSON.stringify(taskValues))
     await fetch(`${process.env.REACT_APP_API_HOST}/api/task/add`, requestOptions)
       .then(async response => {
         const data = await response.json()                  

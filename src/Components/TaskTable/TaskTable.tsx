@@ -6,7 +6,7 @@ import { dateFormatReverse } from '../../utils';
 
 //The TaskTable component provides a table of tasks
 
-export default function TaskTable ({tableData, handleTaskEdit, updateSelectedRows}:any): JSX.Element {
+export default function TaskTable ({tableData, updateSelectedRows, handleCompleteTask}:any): JSX.Element {
 
    //state of whether an error in form validation  or fetch request has occurred
    const [error, setError] = useState(false)
@@ -61,25 +61,22 @@ export default function TaskTable ({tableData, handleTaskEdit, updateSelectedRow
       setErrorMessage(`There was an error! ${error}`)
     }); 
   }
-
-  const handleRowsSelectedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //const name = e.target.name 
-      //const value = e.target.value 
-      const { name, value } = e.target;
-    
-      
-  }
   
-  const handleMarkComplete = (rowData: any) => {
-    if (rowData.tbl_TaskComplete) {
+  const handleMarkComplete = async (rowData: any) => {
 
-      updateTask(rowData)
+    if (rowData.tbl_TaskComplete) {
+      rowData.tbl_TaskComplete = false
+    } else {
+      rowData.tbl_TaskComplete = true
     }
+
+    await updateTask(rowData)
+    handleCompleteTask()
     
   }
 
   const handleEditClick = (rowData: any) => {
-    updateTask(rowData)
+    
   }
 
   //hide error message and reset error status
