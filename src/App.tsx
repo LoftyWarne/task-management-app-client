@@ -23,19 +23,21 @@ function App() {
 
   const [isTaskSelected, setIsTaskSelected] = useState(false);
 
-  const [showTasks, setShowTasks] = useState(false);
-
-  const [showCreateTask, setShowCreateTask] = useState(false);  
-
   const [showCreateList, setShowCreateList] = useState(false);
 
   const [showDeleteList, setShowDeleteList] = useState(false);
 
   const [showEditList, setShowEditList] = useState(false);
 
+  const [showTasks, setShowTasks] = useState(false);
+
+  const [showCreateTask, setShowCreateTask] = useState(false);  
+
   const [showMoveTask, setShowMoveTask] = useState(false);
 
   const [showDeleteTask, setShowDeleteTask] = useState(false)
+
+  const [showEditTask, setShowEditTask] = useState(false)
 
   const [tableData, setTableData] = useState([]);  
 
@@ -160,7 +162,16 @@ function App() {
     }
     if (showCreateTask) {
       setShowCreateTask(false)
-    }         
+    }  
+    if (showMoveTask) {
+      setShowMoveTask(false)
+    }   
+    if (showDeleteTask) {
+      setShowDeleteTask(false)
+    } 
+    if (showEditTask) {
+      setShowEditTask(false)
+    }      
   }  
 
   const handleSaveCreateTask = () => {

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import MaterialTable, { Column } from '@material-table/core';
 import { Done, Edit, RemoveDone } from '@mui/icons-material';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { dateFormatReverse } from '../../utils';
 
 //The TaskTable component provides a table of tasks
 
@@ -18,17 +19,24 @@ export default function TaskTable ({tableData, handleTaskEdit, updateSelectedRow
     tbl_FK_List: number,
     tbl_TaskName: string,
     tbl_TaskDescription: string,
-    tbl_TaskDeadline: Date,
+    tbl_TaskDeadline: string,
     tbl_TaskComplete: boolean
   }
+
   const columns = [
     { title: 'tbl_PK_Task', field: 'tbl_PK_Task', type: 'numeric', hidden: true },
     { title: 'tbl_FK_List', field: 'tbl_FK_List', type: 'numeric', hidden: true },
     { title: 'Task Title', field: 'tbl_TaskName', type: 'string'},
     { title: 'Task Description', field: "tbl_TaskDescription", type: 'string'},
-    { title: 'Task Deadline', field: "tbl_TaskDeadline", type: 'date'},
+     { title: 'Task Deadline', field: 'tbl_TaskDeadline',
+     render: rowData => {
+       if(rowData.tbl_TaskComplete) {
+           return 'N/A'
+       } else {
+          return dateFormatReverse(rowData.tbl_TaskDeadline, 'dateonly')
+       }}},
     { title: 'Task Complete', field: "tbl_TaskComplete", type: 'boolean'},
-  ] as Column<any>[] 
+  ] as Column<tableDataColumns>[] 
 
   const updateTask = async (rowData: any) => {
     const requestOptions = {
