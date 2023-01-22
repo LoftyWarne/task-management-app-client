@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import MaterialTable, { Column } from '@material-table/core';
 import { Done, Edit, RemoveDone } from '@mui/icons-material';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
@@ -12,6 +12,12 @@ export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element
 
    //state of error message presented to the user if an error in form validation or fetch request has occurred 
    const [errorMessage, setErrorMessage] = useState("")
+
+   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+   useEffect(() => {
+    console.log(selectedRows)
+  }, [selectedRows]);
 
   type tableDataColumns = {
     tbl_PK_Task: number,
@@ -53,13 +59,21 @@ export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element
       setErrorMessage(`There was an error! ${error}`)
     }); 
   }
+
+  const handleRowsSelectedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //const name = e.target.name 
+      //const value = e.target.value 
+      const { name, value } = e.target;
+    
+      
+  }
   
   const handleMarkComplete = (rowData: any) => {
-    updateTask(rowData)
-  }
+    if (rowData.tbl_TaskComplete) {
 
-  const handleMarkIncomplete = (rowData: any) => {
-    updateTask(rowData)
+      updateTask(rowData)
+    }
+    
   }
 
   const handleEditClick = (rowData: any) => {
@@ -75,24 +89,25 @@ export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element
   return (       
 
     <>
+
       <MaterialTable columns={columns} data={tableData}    
         actions={[
-          // Only allow incomplete rows to be editable
-          // @ts-ignore
-          rowData => !rowData.tbl_TaskComplete ?  ({
-            icon: Edit,
-            position: "row",
-            tooltip: 'Edit',
-            onClick: (event, rowData) => {
-              handleEditClick(rowData)
-            }             
-          }) : "",
-          // Display a different icon if a row is complete or incomplete
-          // @ts-ignore
           {
             position: "row",
             action: (rowData) => ({
-                icon: rowData.tbl_TaskComplete ? Done : RemoveDone,
+                icon: Edit,
+                position: "row",
+                tooltip: 'Mark Complete',
+                onClick: (event: any, rowData: any) => {
+                  handleMarkComplete(rowData)
+                }             
+              })
+          },
+          // Display a different icon if a row is complete or incomplete
+          {
+            position: "row",
+            action: (rowData) => ({
+                icon: rowData.tbl_TaskComplete ? RemoveDone : Done,
                 position: "row",
                 tooltip: 'Mark Complete',
                 onClick: (event: any, rowData: any) => {
@@ -101,14 +116,22 @@ export default function TaskTable ({tableData, handleTaskEdit}:any): JSX.Element
               })
           }
         ]}
-        
+        onRowClick={(event, rowData) => {(       
+          
+          setSelectedRows ([
+            ...selectedRows,
+            /* @ts-ignore */
+            rowData.tbl_PK_Task
+          ])
+
+        )}}
         options={{
           search: false, draggable: false, idSynonym: 'tbl_PK_Task', searchFieldAlignment: "right", searchAutoFocus: true, searchFieldVariant: "standard",
           filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true, toolbar:false,
           showSelectAllCheckbox: true, showTextRowsSelected: true, showTitle: false, grouping: false, columnsButton: false,
           rowStyle: {padding: '0', margin:'0', textAlign:'left', border: "solid black 1px",background: "white"},
-          headerStyle: { background: "#75C9FA",color:"#000", padding: '1', margin:'0', textAlign:'left', justifyContent: "left",
-          position: "sticky", borderBottom: "solid black 1px", borderLeft: "solid black 1px", borderRight: "solid black 1px" },
+          headerStyle: { background: "#2196f3", color:"white", padding: '1', margin:'0', textAlign:'left', justifyContent: "left",
+          position: "sticky", borderBottom: "solid black 1px", borderLeft: "solid black 1px", borderRight: "solid black 1px", fontWeight: 'bold' },
           maxBodyHeight:' 675px'
         }}
       />
