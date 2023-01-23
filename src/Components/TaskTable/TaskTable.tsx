@@ -3,7 +3,6 @@ import MaterialTable, { Column } from '@material-table/core';
 import { Done, Edit, RemoveDone } from '@mui/icons-material';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import { dateFormatReverse } from '../../utils';
-import { autocompleteClasses } from '@mui/material';
 
 //The TaskTable component provides a table of tasks
 

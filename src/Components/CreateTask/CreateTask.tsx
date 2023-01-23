@@ -140,6 +140,7 @@ export default function CreateTask ({handleSaveCreateTask, handleClose, selected
                 variant="outlined"
                 multiline
                 fullWidth
+                minRows={5}
                 value={taskValues.tbl_TaskDescription}
                 onChange={handleTaskInputChange}  
               />

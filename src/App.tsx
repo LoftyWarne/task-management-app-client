@@ -110,8 +110,12 @@ function App() {
 
   const handleSaveCreateList = () => {
     setShowCreateList(false)
-    fetchLists()
+    setShowTasks(false)
     setIsTaskSelected(false)
+    setIsListSelected(false)
+    setinitialRender(true)
+    setSelectedList({tbl_PK_List: 0})
+    fetchLists()
   }
 
   const handleSaveEditListName = () => {
@@ -124,6 +128,10 @@ function App() {
     setShowDeleteList(false)
     setShowTasks(false)
     setIsTaskSelected(false)
+    setIsListSelected(false)
+    setinitialRender(true)
+    setSelectedList({tbl_PK_List: 0})
+    fetchLists()
   }  
 
   const handleClose = () => {

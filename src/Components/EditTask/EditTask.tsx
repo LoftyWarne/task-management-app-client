@@ -109,7 +109,7 @@ export default function EditTask ({handleEditTaskConfirmed, handleClose, taskBei
     <>
 
       <Dialog open onClose={handleClose}>
-        <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Add Task</DialogTitle>
+        <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Edit Task</DialogTitle>
         <DialogContent sx={{marginTop: "20px"}}>
             <DialogContentText style={{color:'black', fontWeight: '500'}}>
               Task Name:
@@ -141,6 +141,7 @@ export default function EditTask ({handleEditTaskConfirmed, handleClose, taskBei
                 variant="outlined"
                 multiline
                 fullWidth
+                minRows={5}
                 value={taskValues.tbl_TaskDescription}
                 onChange={handleTaskInputChange}  
               />
