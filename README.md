@@ -1,7 +1,7 @@
 
 # Task Management App Client
 
-This is the reporsitory for the front-end of a simple task management web app.
+This is the repository for the front-end of a simple task management web app.
 
 
 ## Demo
