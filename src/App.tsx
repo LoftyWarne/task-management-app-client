@@ -203,54 +203,51 @@ function App() {
   }  
 
   return (
-    <div className="App">
+    <div className="App" style={{width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
       <h1>Task Management App</h1>         
 
       <FormLabel sx={{fontWeight:'bold'}}>Select List:</FormLabel>
 
-      <DropdownList
-        className='listCbx'
-        name='list'
-        placeholder="Select List"
-        title="Select List"
-        dataKey="tbl_PK_List"
-        textField="tbl_ListName"
-        value={selectedList}
-        data={listCbxData}
-        style={{maxWidth: '500px', marginBottom: '30px', justifySelf: 'center', marginLeft: 'auto', marginRight: 'auto'}}
-        onChange={value => handleListSelectionChange(value)}
-        filter='contains'
-        renderListItem={({ item }: any)=> (
-          <table>
-            <tbody>
-              <tr>
-                <td >{item.tbl_ListName}</td>
-              </tr>
-            </tbody>
-          </table>
-          
-        )}
-        renderValue={({ item }: any) => (
-          <table>
-            <tbody>
-              <tr>
-                <td >{item.tbl_ListName}</td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-      />
+        <DropdownList
+          className='listCbx'
+          name='list'
+          placeholder="Select List"
+          title="Select List"
+          dataKey="tbl_PK_List"
+          textField="tbl_ListName"
+          value={selectedList}
+          data={listCbxData}
+          style={{maxWidth: '500px', marginBottom: '30px', justifySelf: 'center', marginLeft: 'auto', marginRight: 'auto'}}
+          onChange={value => handleListSelectionChange(value)}
+          filter='contains'
+          renderListItem={({ item }: any)=> (
+            <table>
+              <tbody>
+                <tr>
+                  <td >{item.tbl_ListName}</td>
+                </tr>
+              </tbody>
+            </table>
+            
+          )}
+          renderValue={({ item }: any) => (
+            <table>
+              <tbody>
+                <tr>
+                  <td >{item.tbl_ListName}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
+        />
 
-        <div className='listBtnGroup'>
+        <Button variant="contained" className='listBtn' size='large' sx={{mx: "60px", my: "10px", minWidth: '150px'}} onClick={() => setShowCreateList(true)}>Create List</Button>
 
-          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowCreateList(true)}>Create List</Button>
+        <Button variant="contained" className='listBtn' size='large' sx={{mx: "60px", my: "10px", minWidth: '150px'}} onClick={() => setShowDeleteList(true)} disabled={!isListSelected}>Delete List</Button>
 
-          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowDeleteList(true)} disabled={!isListSelected}>Delete List</Button>
-
-          <Button variant="contained" className='listBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowEditList(true)} disabled={!isListSelected}>Rename List</Button>
+        <Button variant="contained" className='listBtn' size='large' sx={{mx: "60px", my: "10px", minWidth: '150px'}} onClick={() => setShowEditList(true)} disabled={!isListSelected}>Rename List</Button>
         
-        </div>
 
         {showCreateList ? 
           <CreateList 
@@ -279,7 +276,7 @@ function App() {
         isLoading ? <LoadingSpinner />  :
 
           <>
-            <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
+            <div style={{marginTop: '30px', marginBottom: '30px'}}>
 
               <TaskTable 
                 tableData={tableData} 
@@ -290,13 +287,13 @@ function App() {
 
             </div>
 
-            <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
+            <div>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowCreateTask(true)}>Add Task</Button>
+              <Button variant="contained" className='taskBtn' size='large' sx={{mx: "60px", my: "10px", minWidth: '150px'}} onClick={() => setShowCreateTask(true)}>Add Task</Button>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowMoveTask(true)} disabled={!isTaskSelected}>Move Task</Button>
+              <Button variant="contained" className='taskBtn' size='large' sx={{mx: "60px", my: "10px", minWidth: '150px'}} onClick={() => setShowMoveTask(true)} disabled={!isTaskSelected}>Move Task</Button>
 
-              <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowDeleteTask(true)} disabled={!isTaskSelected}>Delete Task</Button>
+              <Button variant="contained" className='taskBtn' size='large' sx={{mx: "60px", my: "10px", minWidth: '150px'}} onClick={() => setShowDeleteTask(true)} disabled={!isTaskSelected}>Delete Task</Button>
 
               {showMoveTask ? 
                 <MoveTask 
