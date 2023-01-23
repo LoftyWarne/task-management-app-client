@@ -1,7 +1,7 @@
 
 # Task Management App Client
 
-This is the repository for the front-end of a simple task management web app.
+This is the repository for the front-end of a simple task management web app built using React and Typescript.
 
 
 ## Demo
@@ -24,6 +24,12 @@ https://main.d3uxpr24tjct0i.amplifyapp.com/
 - The text of completed tasks is formatted with ~strike-through~ styling
 - Click Move Task to move all selected tasks (single or multiple) to a different chosen list
 
+Future Features:
+- Show/hide completed tasks checkbox/toggle
+- Conditionally format background or text color of rows depending on status (e.g. overdue, completed)
+- Show tasks from all lists in one view
+- User login
+- Drag-and-drop kanban style view
 
 ## Run Locally
 
