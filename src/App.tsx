@@ -11,6 +11,7 @@ import TaskTable from './Components/TaskTable/TaskTable'
 import MoveTask from './Components/MoveTask/MoveTask'
 import CreateTask from './Components/CreateTask/CreateTask';
 import DeleteTask from './Components/DeleteTask/DeleteTask';
+import EditTask from './Components/EditTask/EditTask';
 
 function App() {
 
@@ -39,6 +40,8 @@ function App() {
   const [showDeleteTask, setShowDeleteTask] = useState(false)
 
   const [showEditTask, setShowEditTask] = useState(false)
+
+  const [taskBeingEdited, setTaskBeingEdited] = useState({tbl_PK_Task: 0})
 
   const [tableData, setTableData] = useState([]);  
 
@@ -193,6 +196,17 @@ function App() {
     setIsTaskSelected(false)
   }
 
+  const handleEditTaskConfirmed = () => {
+    fetchListTasks()
+    setShowEditTask(false)
+    setIsTaskSelected(false)
+  }
+
+  const handleEditTask = (rowData: any) => {
+    setTaskBeingEdited(rowData)
+    setShowEditTask(true)
+  }
+
   const handleCompleteTask = () => {
     fetchListTasks()
     setIsTaskSelected(false)
@@ -275,7 +289,12 @@ function App() {
           <>
             <div style={{marginTop: '30px', width: '90%', marginLeft:'auto', marginRight: 'auto'}}>
 
-              <TaskTable tableData={tableData} updateSelectedRows={updateSelectedRows} handleCompleteTask={handleCompleteTask}/>
+              <TaskTable 
+                tableData={tableData} 
+                updateSelectedRows={updateSelectedRows} 
+                handleCompleteTask={handleCompleteTask}
+                handleEditTask={handleEditTask}
+              />
 
             </div>
 
@@ -287,16 +306,35 @@ function App() {
 
               <Button variant="contained" className='taskBtn' size='medium' sx={{mx: "30px"}} onClick={() => setShowDeleteTask(true)} disabled={!isTaskSelected}>Delete Task</Button>
 
-              {showMoveTask ? <MoveTask handleMoveTaskConfirmed={handleMoveTaskConfirmed} handleClose={handleClose} /> : ""}
+              {showMoveTask ? 
+                <MoveTask 
+                  handleMoveTaskConfirmed={handleMoveTaskConfirmed} 
+                  handleClose={handleClose} 
+                /> 
+                : ""}
 
-              {showCreateTask ? <CreateTask handleSaveCreateTask={handleSaveCreateTask} handleClose={handleClose} selectedList={selectedList.tbl_PK_List}/> : ""}
+              {showCreateTask ? 
+                <CreateTask 
+                  handleSaveCreateTask={handleSaveCreateTask} 
+                  handleClose={handleClose} 
+                  selectedList={selectedList.tbl_PK_List}
+                /> 
+                : ""}
 
               {showDeleteTask ? 
-              <DeleteTask 
-                selectedRows={selectedRows}
-                handleDeleteTaskConfirmed={handleDeleteTaskConfirmed} 
-                handleClose={handleClose}
-              /> : ""}
+                <DeleteTask 
+                  selectedRows={selectedRows}
+                  handleDeleteTaskConfirmed={handleDeleteTaskConfirmed} 
+                  handleClose={handleClose}
+                /> 
+                : ""}
+
+              {showEditTask ? 
+                <EditTask 
+                  handleEditTaskConfirmed={handleEditTaskConfirmed} 
+                  handleClose={handleClose} 
+                  taskBeingEdited={taskBeingEdited}                  
+                /> : ""}
 
             </div>
 

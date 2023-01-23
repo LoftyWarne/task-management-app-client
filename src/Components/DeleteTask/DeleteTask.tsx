@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
-//The Delete component provides a dialog box for confirming list deletion
+//The Delete component provides a dialog box for confirming task deletion
 
 interface DeleteListProps {
   selectedRows: any;
@@ -40,12 +40,6 @@ export default function DeleteTask ({selectedRows, handleDeleteTaskConfirmed, ha
       setError(true)
       setErrorMessage(`There was an error! ${error}`)
     });     
-  }
-
-  const deleteEachTask = async () => {
-
-    
-
   }
 
   const handleDeleteTask = async() => {

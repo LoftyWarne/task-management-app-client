@@ -6,7 +6,7 @@ import { dateFormatReverse } from '../../utils';
 
 //The TaskTable component provides a table of tasks
 
-export default function TaskTable ({tableData, updateSelectedRows, handleCompleteTask}:any): JSX.Element {
+export default function TaskTable ({tableData, updateSelectedRows, handleCompleteTask, handleEditTask}:any): JSX.Element {
 
    //state of whether an error in form validation  or fetch request has occurred
    const [error, setError] = useState(false)
@@ -38,7 +38,7 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
     { title: 'Task Complete', field: "tbl_TaskComplete", type: 'boolean'},
   ] as Column<tableDataColumns>[] 
 
-  const updateTask = async (rowData: any) => {
+  const updateTaskStatus = async (rowData: any) => {
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -70,12 +70,8 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
       rowData.tbl_TaskComplete = true
     }
 
-    await updateTask(rowData)
+    await updateTaskStatus(rowData)
     handleCompleteTask()
-    
-  }
-
-  const handleEditClick = (rowData: any) => {
     
   }
 
@@ -96,9 +92,9 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
             action: (rowData) => ({
                 icon: Edit,
                 position: "row",
-                tooltip: 'Mark Complete',
+                tooltip: 'Edit Task',
                 onClick: (event: any, rowData: any) => {
-                  handleMarkComplete(rowData)
+                  handleEditTask(rowData)
                 }             
               })
           },
