@@ -92,7 +92,7 @@ function App() {
   const fetchListTasks = async () => {
     try {  
       setIsLoading(true)
-      const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task/${selectedList.tbl_PK_List}`)    
+      const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task/findallonlist/${selectedList.tbl_PK_List}`)    
       const json = await resp.json();
       setTableData(json)
       setIsLoading(false)

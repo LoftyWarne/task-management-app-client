@@ -56,7 +56,7 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(rowData)
     };
-    await fetch(`${process.env.REACT_APP_API_HOST}/api/task/update/${rowData.tbl_PK_Task}`, requestOptions)
+    await fetch(`${process.env.REACT_APP_API_HOST}/api/task/updateTaskStatus/${rowData.tbl_PK_Task}`, requestOptions)
       .then(async response => {
         const data = await response.json()                  
         // check for error response
