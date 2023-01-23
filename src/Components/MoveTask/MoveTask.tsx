@@ -6,11 +6,12 @@ import "react-widgets/styles.css";
 //The MoveTask component provides a dialog box for moving tasks between lists
 
 interface MoveTaskProps {
+    selectedRows: any;
     handleMoveTaskConfirmed: any;
     handleClose: any;
   }
 
-export default function MoveTask ({handleMoveTaskConfirmed, handleClose}: MoveTaskProps): JSX.Element {
+export default function MoveTask ({selectedRows, handleMoveTaskConfirmed, handleClose}: MoveTaskProps): JSX.Element {
 
     //state of data in list combobox
     const [listCbxData, setListCbxData] = useState([]); 
@@ -21,8 +22,15 @@ export default function MoveTask ({handleMoveTaskConfirmed, handleClose}: MoveTa
     //state of list selected
     const [selectedList, setSelectedList] = useState({}); 
 
+      //state of whether an error in form validation  or fetch request has occurred
+    const [error, setError] = useState(false)
+
+    //state of error message presented to the user if an error in form validation or fetch request has occurred 
+    const [errorMessage, setErrorMessage] = useState("")
+
+
     interface cbxListValues {
-        tbl_PK_ListValue: number,
+        tbl_PK_List: number,
         tbl_ListName: string
     }
 
@@ -41,17 +49,53 @@ export default function MoveTask ({handleMoveTaskConfirmed, handleClose}: MoveTa
           console.error('There was an error!', error);
         }
     }
+
+    // PUT request to update task record in tbl_Task
+    const moveTask = async (pkTask: number) => {
+        const requestOptions = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(selectedList)
+        };
+        console.log(selectedList)
+        await fetch(`${process.env.REACT_APP_API_HOST}/api/task/updateTaskList/${pkTask}`, requestOptions)
+        .then(async response => {
+            const data = await response.json()                  
+            // check for error response
+            if (!response.ok) {
+            // get error message from body or default to response status
+            const error = (data && data.message) || response.status;
+            return Promise.reject(error);
+            }           
+        })      
+        .catch(error => {
+            //If PUT request is unsuccessful log error to console and display error dialog box
+            console.error('There was an error!', error);
+            setError(true)
+            setErrorMessage(`There was an error! ${error}`)
+        });    
+    }
+
     
     const handleListSelectionChange = (value: cbxListValues) => {
         setSelectedList(value)
         setIsListSelected(true)
     }  
 
+    const handleMoveTaskClick = async () => {
+
+        for (const tbl_PK_Task of selectedRows) {
+            await moveTask(tbl_PK_Task)
+          }
+
+        handleMoveTaskConfirmed(selectedList)
+    }
+
     return (        
 
         <Dialog onClose={handleClose} open>
             <DialogTitle sx={{justifySelf: 'center', margin:'auto'}}>Move Task</DialogTitle>
-            <DialogContent>  
+            <DialogContent sx={{minHeight: '300px'}}>  
                 <DialogContentText>Select Destination List</DialogContentText>
                 <DropdownList
                     className='listCbx'
@@ -87,7 +131,7 @@ export default function MoveTask ({handleMoveTaskConfirmed, handleClose}: MoveTa
                 />
             </DialogContent>
             <DialogActions>
-            <Button onClick={handleMoveTaskConfirmed} sx={{justifySelf: 'left', margin: 'auto'}} disabled={!isListSelected}>Confirm</Button>
+            <Button onClick={handleMoveTaskClick} sx={{justifySelf: 'left', margin: 'auto'}} disabled={!isListSelected}>Confirm</Button>
             <Button onClick={handleClose} sx={{justifySelf: 'right', margin: 'auto'}}>Cancel</Button>
             </DialogActions>
         </Dialog>

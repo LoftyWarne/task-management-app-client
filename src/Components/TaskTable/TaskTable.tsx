@@ -3,6 +3,7 @@ import MaterialTable, { Column } from '@material-table/core';
 import { Done, Edit, RemoveDone } from '@mui/icons-material';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import { dateFormatReverse } from '../../utils';
+import { autocompleteClasses } from '@mui/material';
 
 //The TaskTable component provides a table of tasks
 
@@ -26,16 +27,28 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
   const columns = [
     { title: 'tbl_PK_Task', field: 'tbl_PK_Task', type: 'numeric', hidden: true },
     { title: 'tbl_FK_List', field: 'tbl_FK_List', type: 'numeric', hidden: true },
-    { title: 'Task Title', field: 'tbl_TaskName', type: 'string'},
-    { title: 'Task Description', field: "tbl_TaskDescription", type: 'string'},
+    { title: 'Task Title', field: 'tbl_TaskName', type: 'string', cellStyle: (e, rowData) => {
+      if (rowData.tbl_TaskComplete) {
+        return { textDecoration: "line-through" };
+      }
+    }},
+    { title: 'Task Description', field: "tbl_TaskDescription", type: 'string', cellStyle: (e, rowData) => {
+      if (rowData.tbl_TaskComplete) {
+        return { textDecoration: "line-through" };
+      }
+    }},
      { title: 'Task Deadline', field: 'tbl_TaskDeadline',
      render: rowData => {
        if(rowData.tbl_TaskComplete) {
            return 'N/A'
        } else {
           return dateFormatReverse(rowData.tbl_TaskDeadline, 'dateonly')
-       }}},
-    { title: 'Task Complete', field: "tbl_TaskComplete", type: 'boolean'},
+       }}, cellStyle: (e, rowData) => {
+        if (rowData.tbl_TaskComplete) {
+          return { textDecoration: "line-through" };
+        }
+      }},
+    { title: 'Task Complete', field: "tbl_TaskComplete", type: 'boolean', hidden: true},
   ] as Column<tableDataColumns>[] 
 
   const updateTaskStatus = async (rowData: any) => {
@@ -125,7 +138,7 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
         }}
         options={{
           search: false, draggable: false, idSynonym: 'tbl_PK_Task', searchFieldAlignment: "right", searchAutoFocus: true, searchFieldVariant: "standard",
-          filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true, toolbar:false,
+          filtering: false, paging: false, addRowPosition: "first", actionsColumnIndex: -1, selection: true, toolbar:false, tableLayout: 'auto',
           showSelectAllCheckbox: true, showTextRowsSelected: true, showTitle: false, grouping: false, columnsButton: false,
           rowStyle: {padding: '0', margin:'0', textAlign:'left', border: "solid black 1px",background: "white"},
           headerStyle: { background: "#2196f3", color:"white", padding: '1', margin:'0', textAlign:'left', justifyContent: "left",

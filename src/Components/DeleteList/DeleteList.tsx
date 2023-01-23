@@ -18,6 +18,28 @@ export default function DeleteList ({selectedList, handleDeleteListConfirmed, ha
   //state of error message presented to the user if an error in fetch request has occurred 
   const [errorMessage, setErrorMessage] = useState("")
 
+  //DELETE request to delete all records in list from tbl_Task
+  const deleteAllTasks = async () => {
+    const requestOptions = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    };
+    await fetch(`${process.env.REACT_APP_API_HOST}/api/task/deleteall/${selectedList.tbl_PK_List}`, requestOptions)
+      .then(async response => {
+        const data = await response.json()                  
+        // check for error response
+        if (!response.ok) {
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }           
+    })      
+    .catch(error => {
+      //If DELETE request is unsuccessful log error to console
+      console.error('There was an error!', error);
+    });     
+  }
+
   //DELETE request to delete record in tbl_List
   const deleteList = async () => {
     const requestOptions = {
@@ -35,14 +57,14 @@ export default function DeleteList ({selectedList, handleDeleteListConfirmed, ha
         }           
     })      
     .catch(error => {
-      //If DELETE request is unsuccessful log error to console and display error dialog box
+      //If DELETE request is unsuccessful log error to console
       console.error('There was an error!', error);
-      setError(true)
-      setErrorMessage(`There was an error! ${error}`)
     });     
   }
 
   const handleDeleteList = async () => {
+    //delete all tasks in list before deleting list, otherwise unable to delete list due to foreign key constraint
+    await deleteAllTasks()
     await deleteList()
     handleDeleteListConfirmed()
   };

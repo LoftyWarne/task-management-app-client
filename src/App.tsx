@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Button} from '@mui/material';
+import { Button, FormLabel} from '@mui/material';
 import { DropdownList } from 'react-widgets';
 import "react-widgets/styles.css";
 import './App.css';
@@ -88,18 +88,6 @@ function App() {
       console.error('There was an error!', error);
     }
   }
-  
-  const fetchAllTasks = async () => {
-    try {  
-      setIsLoading(true)
-      const resp = await fetch(`${process.env.REACT_APP_API_HOST}/api/task`)    
-      const json = await resp.json();
-      setTableData(json)
-      setIsLoading(false)
-    } catch (error) {
-      console.error('There was an error!', error);
-    }
-  }
 
   const fetchListTasks = async () => {
     try {  
@@ -111,28 +99,6 @@ function App() {
     } catch (error) {
       console.error('There was an error!', error);
     }
-  }
-
-  const updateTask = async (newData: any) => {
-    setIsLoading(true)
-    const requestOptions = {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newData)
-    };
-    await fetch(`${process.env.REACT_APP_API_HOST}/${newData.tbl_PK_Task}`, requestOptions)
-      .then(async response => {
-        const data = await response.json()                  
-        // check for error response
-        if (!response.ok) {
-          // get error message from body or default to response status
-          const error = (data && data.message) || response.status;
-          return Promise.reject(error);
-        }            
-    })      
-    .catch(error => {
-      console.error('There was an error!', error);
-    });     
   }
 
   const handleListSelectionChange = (value: any) => {
@@ -233,6 +199,8 @@ function App() {
 
       <h1>Task Management App</h1>         
 
+      <FormLabel sx={{fontWeight:'bold'}}>Select List:</FormLabel>
+
       <DropdownList
         className='listCbx'
         name='list'
@@ -276,11 +244,27 @@ function App() {
         
         </div>
 
-        {showCreateList ? <CreateList handleSaveCreateList={handleSaveCreateList} handleClose={handleClose}/> : ""}
+        {showCreateList ? 
+          <CreateList 
+            handleSaveCreateList={handleSaveCreateList} 
+            handleClose={handleClose}
+          /> 
+          : ""}
           
-        {showEditList ? <EditList selectedList={selectedList} handleSaveEditListName={handleSaveEditListName} handleClose={handleClose}/> : ""}
+        {showEditList ? 
+          <EditList selectedList={selectedList} 
+            handleSaveEditListName={handleSaveEditListName} 
+            handleClose={handleClose}
+          /> 
+          : ""}
 
-        {showDeleteList ? <DeleteList selectedList={selectedList} handleDeleteListConfirmed={handleDeleteListConfirmed} handleClose={handleClose}/> : ""}        
+        {showDeleteList ? 
+          <DeleteList 
+            selectedList={selectedList} 
+              handleDeleteListConfirmed={handleDeleteListConfirmed} 
+              handleClose={handleClose}
+          /> 
+          : ""}        
 
       {showTasks ?            
 
@@ -308,6 +292,7 @@ function App() {
 
               {showMoveTask ? 
                 <MoveTask 
+                  selectedRows={selectedRows}
                   handleMoveTaskConfirmed={handleMoveTaskConfirmed} 
                   handleClose={handleClose} 
                 /> 
