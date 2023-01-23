@@ -41,8 +41,6 @@ export default function EditList ({selectedList, handleSaveEditListName, handleC
     .catch(error => {
       //If PUT request is unsuccessfull log error to console and display error dialog box
       console.error('There was an error!', error);
-      setError(true)
-      setErrorMessage(`There was an error! ${error}`)
     });     
   }
 

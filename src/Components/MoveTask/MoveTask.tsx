@@ -20,14 +20,7 @@ export default function MoveTask ({selectedRows, handleMoveTaskConfirmed, handle
     const [isListSelected, setIsListSelected] = useState(false);
 
     //state of list selected
-    const [selectedList, setSelectedList] = useState({}); 
-
-      //state of whether an error in form validation  or fetch request has occurred
-    const [error, setError] = useState(false)
-
-    //state of error message presented to the user if an error in form validation or fetch request has occurred 
-    const [errorMessage, setErrorMessage] = useState("")
-
+    const [selectedList, setSelectedList] = useState({});
 
     interface cbxListValues {
         tbl_PK_List: number,
@@ -57,7 +50,6 @@ export default function MoveTask ({selectedRows, handleMoveTaskConfirmed, handle
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(selectedList)
         };
-        console.log(selectedList)
         await fetch(`${process.env.REACT_APP_API_HOST}/api/task/updateTaskList/${pkTask}`, requestOptions)
         .then(async response => {
             const data = await response.json()                  
@@ -69,10 +61,8 @@ export default function MoveTask ({selectedRows, handleMoveTaskConfirmed, handle
             }           
         })      
         .catch(error => {
-            //If PUT request is unsuccessful log error to console and display error dialog box
+            //If PUT request is unsuccessful log error to console
             console.error('There was an error!', error);
-            setError(true)
-            setErrorMessage(`There was an error! ${error}`)
         });    
     }
 

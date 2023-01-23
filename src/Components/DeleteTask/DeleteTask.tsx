@@ -37,8 +37,6 @@ export default function DeleteTask ({selectedRows, handleDeleteTaskConfirmed, ha
     .catch(error => {
       //If DELETE request is unsuccessful log error to console and display error dialog box
       console.error('There was an error!', error);
-      setError(true)
-      setErrorMessage(`There was an error! ${error}`)
     });     
   }
 

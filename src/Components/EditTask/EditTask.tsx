@@ -46,10 +46,8 @@ export default function EditTask ({handleEditTaskConfirmed, handleClose, taskBei
         }           
     })      
     .catch(error => {
-        //If PUT request is unsuccessful log error to console and display error dialog box
+        //If PUT request is unsuccessful log error to console
         console.error('There was an error!', error);
-        setError(true)
-        setErrorMessage(`There was an error! ${error}`)
     });    
   }
 

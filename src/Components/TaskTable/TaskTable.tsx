@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState} from 'react';
 import MaterialTable, { Column } from '@material-table/core';
 import { Done, Edit, RemoveDone } from '@mui/icons-material';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
@@ -67,10 +67,8 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
         }          
     })      
     .catch(error => {
-      //If PUT request is unsuccessfull log error to console and display error dialog box
+      //If PUT request is unsuccessfull log error to console
       console.error('There was an error!', error);
-      setError(true)
-      setErrorMessage(`There was an error! ${error}`)
     }); 
   }
   

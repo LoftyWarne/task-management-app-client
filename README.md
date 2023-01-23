@@ -1,46 +1,93 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Task Management App Client
 
-## Available Scripts
+This is the reporsitory for the front-end of a simple task management web app.
 
-In the project directory, you can run:
 
-### `npm start`
+## Demo
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The deployed application, hosted on AWS Amplify, can be accessed at the following URL:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+https://main.d3uxpr24tjct0i.amplifyapp.com/
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features / User Instructions
 
-### `npm run build`
+- Select a list from the dropdown box to view all associated tasks
+- Click Create List to create a new list with a specified name
+- Click Rename List to rename the selected list
+- Click Delete List to delete the selected list and all associated tasks
+- All columns in the task table are sortable in ascending and descending order by clicking each column heading
+- Click Add Task to add a new task to the selected list with a task name, description and deadline
+- Click Delete Task to delete all selected tasks (single or multiple)
+- Click the tick icon in the rightmost Actions column to mark a task as complete/incomplete
+- The text of completed tasks is formatted with ~strike-through~ styling
+- Click Move Task to move all selected tasks (single or multiple) to a different chosen list
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Run Locally
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Clone the project:
 
-### `npm run eject`
+```bash
+  git clone https://github.com/LoftyWarne/task-management-app-client.git
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Go to the project directory:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+  cd task-management-app-client
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Install dependencies:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+  npm install
+```
 
-## Learn More
+Start the server:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+  npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+## Dependencies
+
+See package.json
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file.
+
+`REACT_APP_API_HOST` - address of the Node Express.js backend server
+
+
+## Running Tests
+
+To run tests, use the following command:
+
+```bash
+  npm run test
+```
+
+
+## Authors
+
+- Conor Warne [@LoftyWarne](https://github.com/LoftyWarne)
+
+
+
+
+## Support
+
+For support, email conorwarne92@gmail.com
+
+
+## Related
+
+Here are some related projects that form the other elements of the full-stack:
+
+[Task Management App Server](https://github.com/LoftyWarne/task-management-app-server.git)
+
+[Task Management App Database](https://github.com/LoftyWarne/task-management-app-db.git)
+

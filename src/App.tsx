@@ -47,16 +47,7 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [checkboxShowComplete, setCheckboxShowComplete]  = useState(false);
-
   const [selectedRows, setSelectedRows] = useState([]);
-
-  const showCompleteCheckboxSelectionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setinitialRender(false)
-    setCheckboxShowComplete(event.target.checked)
-    setSelectedRows([])
-    setIsTaskSelected(false)
-  } 
 
   useEffect(() => {
     fetchLists();
