@@ -21,6 +21,7 @@ https://main.d3uxpr24tjct0i.amplifyapp.com/
 - Click Add Task to add a new task to the selected list with a task name, description and deadline
 - Click Delete Task to delete all selected tasks (single or multiple)
 - Click the tick icon in the rightmost Actions column to mark a task as complete/incomplete
+- Click the pencil icon in the rightmost Actions column to edit a task name, description and deadline
 - The text of completed tasks is formatted with ~strike-through~ styling
 - Click Move Task to move all selected tasks (single or multiple) to a different chosen list
 
