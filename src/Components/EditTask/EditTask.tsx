@@ -63,9 +63,7 @@ export default function EditTask ({handleEditTaskConfirmed, handleClose, taskBei
 
     const datetimeToday = new Date()
     const dateToday = new Date(datetimeToday.setHours(0, 0, 0, 0))
-
-    /* @ts-ignore */  
-    const taskDeadline = new Date(dateFormatReverse(taskValues.tbl_TaskDeadline, 'dateonly'))    
+    const taskDeadline = new Date(taskValues.tbl_TaskDeadline)
     
     if(taskValues.tbl_TaskName.trim().length === 0) /*check task name text input is not empty*/ {
         setError(true)

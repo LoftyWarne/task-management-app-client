@@ -41,7 +41,7 @@ export default function TaskTable ({tableData, updateSelectedRows, handleComplet
        if(rowData.tbl_TaskComplete) {
            return 'N/A'
        } else {
-          return dateFormatReverse(rowData.tbl_TaskDeadline, 'dateonly')
+          return dateFormatReverse(rowData.tbl_TaskDeadline)
        }}, cellStyle: (e, rowData) => {
         if (rowData.tbl_TaskComplete) {
           return { textDecoration: "line-through" };
